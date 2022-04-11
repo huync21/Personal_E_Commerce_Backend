@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 # Create your models here.
@@ -6,7 +7,11 @@ from store.models import Product
 
 
 class Rating(models.Model):
-    star_num = models.IntegerField()
+    star_num = models.IntegerField(default=5,
+        validators=[
+            MaxValueValidator(5),
+            MinValueValidator(0)
+        ])
     comment = models.CharField(max_length=555)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
