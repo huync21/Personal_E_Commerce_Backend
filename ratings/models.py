@@ -8,12 +8,15 @@ from store.models import Product
 
 class Rating(models.Model):
     star_num = models.IntegerField(default=5,
-        validators=[
-            MaxValueValidator(5),
-            MinValueValidator(0)
-        ])
+                                   validators=[
+                                       MaxValueValidator(5),
+                                       MinValueValidator(0)
+                                   ])
     comment = models.CharField(max_length=555)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.account.username + ': ' + self.comment + ' ||star nums: ' + str(self.star_num)

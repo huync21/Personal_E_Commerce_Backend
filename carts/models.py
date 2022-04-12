@@ -11,4 +11,7 @@ class CartItems(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    accounts = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return 'product: ' + self.product.product_name + ' || quantity:' + str(self.quantity)

@@ -13,10 +13,6 @@ class ProductViewSet(ReadOnlyModelViewSet):
     # permission_classes = (ProductPermission,)
     queryset = Product.objects.filter(is_available=True).order_by('-created_date')
 
-    def perform_destroy(self, instance):
-        instance.is_available = False
-        instance.save()
-
     @action(methods=['get'], detail=False, url_path='search', url_name='search')
     def search(self, request):
         search_key_word = request.query_params['keyword']

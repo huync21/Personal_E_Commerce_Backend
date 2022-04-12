@@ -26,5 +26,5 @@ urlpatterns = [
     # path('api/orders/', include('orders.urls')),
     path('api/ratings/', include('ratings.urls')),
     path('api/banners/', include('banners.urls')),
-    # path('api/carts/', include('carts.urls'))
+    path('api/carts/', include('carts.urls'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
