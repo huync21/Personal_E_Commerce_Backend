@@ -15,9 +15,15 @@ class CartViewSet(ModelViewSet):
     pagination_class = None
     permission_classes = (CartAPIPermission,)
 
-    def get_queryset(self, request):
+    def destroy(self, request, *args, **kwargs):
+        cart_item = self.get_object()
+        cart_item.is_active = False
+        cart_item.save()
+        return Response(data={"message": "Delete Cart Item Successfully!"}, status=status.HTTP_200_OK)
+
+    def get_queryset(self):
         account = self.request.user
-        cart_item_of_user = CartItems.objects.filter(account_id=account.id).order_by('-created_at')
+        cart_item_of_user = CartItems.objects.filter(account_id=account.id, is_active=True).order_by('-created_at')
         return cart_item_of_user
 
     def create(self, request, *args, **kwargs):
@@ -56,3 +62,5 @@ class CartViewSet(ModelViewSet):
             message = "Add product to cart successfully!"
 
         return Response({"message": message}, status=status.HTTP_200_OK)
+
+

@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
+from accounts.models import Account
 from store.models import Product
 
 
@@ -24,6 +25,8 @@ class Order(models.Model):
     total_price = models.IntegerField()
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=10, null=True)
     shipping_address = models.CharField(max_length=1000)
     status = models.CharField(max_length=20,
                               choices=OrderStatus.choices,
