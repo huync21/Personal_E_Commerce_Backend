@@ -1,6 +1,7 @@
 from django.contrib import auth
 from rest_framework import serializers
-from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed
+
 from accounts.models import Account
 
 
@@ -32,23 +33,28 @@ class LoginSerializer(serializers.ModelSerializer):
     username = serializers.CharField(max_length=255,min_length=3,read_only=True)
     first_name = serializers.CharField(max_length=255,min_length=1, read_only=True)
     last_name = serializers.CharField(max_length=255,min_length=1, read_only=True)
+    phone_number = serializers.CharField(max_length=10, read_only=True)
     refresh_token = serializers.CharField(max_length=255,min_length=1,read_only=True)
     access_token = serializers.CharField(max_length=255, min_length=1, read_only=True)
 
     class Meta:
         model = Account
-        fields = ['email', 'password', 'username', 'first_name','last_name','refresh_token', 'access_token']
+        fields = ['email', 'password', 'username', 'first_name', 'last_name', 'phone_number', 'refresh_token', 'access_token']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
         password = attrs.get('password', '')
+        account = Account.objects.get(email=email)
         user = auth.authenticate(email=email, password=password)
         if not user:
             raise AuthenticationFailed('Invalid email or password, try again!')
-        if not user.is_verified:
+        if not account.is_verified:
             raise AuthenticationFailed('Please verify your email to login!')
-        if not user.is_active:
+        if not account.is_active:
             raise AuthenticationFailed('Account has not been activated, contact admin!')
+
+
+
 
         tokens = user.tokens()
 
@@ -65,4 +71,4 @@ class LoginSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['id', 'email', 'first_name', 'last_name', 'username']
+        fields = ['id', 'email', 'first_name', 'last_name','phone_number', 'username']
