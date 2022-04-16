@@ -52,6 +52,7 @@ class Account(AbstractBaseUser):
     email = models.EmailField(max_length=100, unique=True)
     phone_number = models.CharField(max_length=50)
     is_verified = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='photos/accounts', null=True)
 
     # required
     date_joined = models.DateTimeField(auto_now_add=True)
