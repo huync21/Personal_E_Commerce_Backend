@@ -100,10 +100,10 @@ class RatingViewSet(ModelViewSet):
         five_star_rate = five_star / number_of_ratings * 100 if number_of_ratings != 0 else 0
 
         return Response(data={"number_of_ratings": number_of_ratings,
-                              "average_star": average_star,
-                              "one_star_rate": one_star_rate,
-                              "two_star_rate": two_star_rate,
-                              "three_star_rate": three_star_rate,
-                              "four_star_rate": four_star_rate,
-                              "five_star_rate": five_star_rate, }
+                              "average_star": round(average_star, 1),
+                              "one_star_rate": round(one_star_rate, 2),
+                              "two_star_rate": round(two_star_rate, 2),
+                              "three_star_rate": round(three_star_rate,2),
+                              "four_star_rate": round(four_star_rate,2),
+                              "five_star_rate": round(five_star_rate, 2)}
                         , status=status.HTTP_200_OK)
