@@ -19,7 +19,7 @@ class RatingViewSet(ModelViewSet):
 
     def get_queryset(self):
         product_id = self.request.query_params.get('product_id')
-        list_rating_of_product = Rating.objects.filter(product_id=product_id).order_by('-created_at')
+        list_rating_of_product = Rating.objects.filter(product_id=product_id).order_by('-modified_at')
         return list_rating_of_product
 
     def create(self, request, *args, **kwargs):

@@ -7,8 +7,8 @@ from store.serializers import ProductSerializer
 
 class RatingSerializer(serializers.ModelSerializer):
     account = AccountSerializer()
-    created_at = serializers.DateTimeField(format="%d %b %Y")
+    modified_at = serializers.DateTimeField(format="%d %b %Y")
 
     class Meta:
         model = Rating
-        fields = ['account', 'star_num', 'comment', 'created_at']
+        fields = ['account', 'star_num', 'comment', 'modified_at']
