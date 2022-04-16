@@ -1,4 +1,5 @@
 from django.contrib import auth
+from django.contrib.sites.shortcuts import get_current_site
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 
@@ -40,21 +41,22 @@ class LoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['email', 'password', 'username', 'first_name', 'last_name', 'phone_number', 'refresh_token',
-                  'access_token']
+                  'access_token', 'image']
+
 
     def validate(self, attrs):
         email = attrs.get('email', '')
         password = attrs.get('password', '')
-        account = Account.objects.get(email=email)
         user = auth.authenticate(email=email, password=password)
         if not user:
             raise AuthenticationFailed('Invalid email or password, try again!')
-        if not account.is_verified:
+        if not user.is_verified:
             raise AuthenticationFailed('Please verify your email to login!')
-        if not account.is_active:
+        if not user.is_active:
             raise AuthenticationFailed('Account has not been activated, contact admin!')
 
         tokens = user.tokens()
+
 
         return {
             'email': user.email,
@@ -62,11 +64,12 @@ class LoginSerializer(serializers.ModelSerializer):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'refresh_token': tokens['refresh'],
-            'access_token': tokens['access']
+            'access_token': tokens['access'],
+            'image': user.image
         }
 
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'username']
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'username', 'image']
