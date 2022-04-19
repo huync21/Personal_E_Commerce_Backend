@@ -23,7 +23,7 @@ class CartViewSet(ModelViewSet):
 
     def get_queryset(self):
         account = self.request.user
-        cart_item_of_user = CartItems.objects.filter(account_id=account.id, is_active=True).order_by('-created_at')
+        cart_item_of_user = CartItems.objects.filter(account_id=account.id, is_active=True).order_by('-modified_date')
         return cart_item_of_user
 
     def create(self, request, *args, **kwargs):
@@ -63,4 +63,15 @@ class CartViewSet(ModelViewSet):
 
         return Response({"message": message}, status=status.HTTP_200_OK)
 
+    def update(self, request, *args, **kwargs):
+        cart_item_from_request = self.request.data
+        quantity = int(cart_item_from_request["quantity"])
+        cart_id = int(kwargs['pk'])
 
+        cart_item = CartItems.objects.get(id=cart_id)
+        if cart_item is not None:
+            cart_item.quantity = quantity
+            cart_item.save()
+            return Response({"message": "Update cart item successfully!"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "Cart item is not existed!"}, status=status.HTTP_400_BAD_REQUEST)
