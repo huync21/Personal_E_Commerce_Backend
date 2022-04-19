@@ -33,7 +33,7 @@ class CartViewSet(ModelViewSet):
 
         # Check xem trong list cart item cua nguoi dung da co product nay chua
         existed_cart_item = None
-        list_cart_item_of_user = self.get_queryset(self)
+        list_cart_item_of_user = self.get_queryset()
         for cart_item in list_cart_item_of_user:
             pid = cart_item.product_id
             if product_id == pid:
