@@ -44,6 +44,8 @@ class Order(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
 
+
+
 class OrderProduct(models.Model):
     quantity = models.IntegerField()
     price = models.IntegerField()

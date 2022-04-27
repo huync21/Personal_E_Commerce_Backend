@@ -1,5 +1,4 @@
-from django.db import transaction, IntegrityError
-from django.shortcuts import render
+from django.db import transaction
 from rest_framework import viewsets, status
 
 # Create your views here.
@@ -9,7 +8,7 @@ from rest_framework.response import Response
 from carts.models import CartItems
 from orders.models import Order, OrderProduct, Payment, Shipment
 from orders.permissions import OrderAPIPermission, ShipmentAPIPermission
-from orders.serializers import OrderSerializer, PaymentSerializer, ShipmentSerializer
+from orders.serializers import OrderSerializer, PaymentSerializer, ShipmentSerializer, OrderProductSerializer
 from store.models import Product
 
 
@@ -34,11 +33,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         total_price = int(self.request.data["total_price"])
 
         # process
+        shipment = Shipment.objects.get(id=shipment_id)
+        payment = Payment.objects.get(id=payment_id)
+        order_total = total_price+shipment.price
 
         with transaction.atomic():
             order = Order.objects.create(payment_id=payment_id, shipment_id=shipment_id, phone=phone,
                                          shipping_address=shipping_address, account_id=current_user.id,
-                                         total_price=total_price)
+                                         total_price=total_price, order_total=order_total)
             for cart_item_id in list_cart_item_id:
                 cart_item = CartItems.objects.get(id=cart_item_id)
                 product = Product.objects.get(id=cart_item.product_id)
@@ -68,3 +70,11 @@ class OrderViewSet(viewsets.ModelViewSet):
     def shipment_methods(self, request):
         shipments = Shipment.objects.all()
         return Response(data=ShipmentSerializer(list(shipments), many=True, context={"request": request}).data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False, url_path='detail', url_name='detail',
+            name='order-detail')
+    def order_details(self, request):
+        order_id = self.request.query_params.get('order_id')
+        order_products = OrderProduct.objects.filter(order_id=order_id)
+
+        return Response(data=OrderProductSerializer(list(order_products), many=True, context={"request": request}).data, status=status.HTTP_200_OK)

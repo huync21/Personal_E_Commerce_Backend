@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from orders.models import Payment, Shipment, Order, OrderProduct
+from store.serializers import ProductSerializer
 
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -22,6 +23,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
+    product = ProductSerializer()
+
     class Meta:
         model = OrderProduct
-        fields = ['id', 'quantity', 'price']
+        fields = ['id', 'product', 'quantity', 'price']

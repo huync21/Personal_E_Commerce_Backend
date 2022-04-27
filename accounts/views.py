@@ -94,6 +94,8 @@ class AccountAPIView(generics.GenericAPIView):
             )
 
         user = self.request.user
+        if Account.objects.filter(username=user_data['username']).exists() and user.username != user_data['username']:
+            raise serializers.ValidationError({"message": "This user name has already existed!"})
         user.username = user_data['username']
         user.first_name = user_data['first_name']
         user.last_name = user_data['last_name']
