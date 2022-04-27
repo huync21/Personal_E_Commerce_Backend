@@ -70,6 +70,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Account
         fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'username', 'image']

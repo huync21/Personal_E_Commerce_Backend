@@ -3,7 +3,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 # Create your views here.
 from django.urls import reverse
-from rest_framework import status, generics
+from rest_framework import status, generics, serializers
+from rest_framework.decorators import action
 from rest_framework.response import Response
 # from api.permissions import ProductPermission
 from accounts.models import Account
@@ -11,7 +12,8 @@ from E_Commerce_Backend import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
-from accounts.serializers import RegisterSerializer, LoginSerializer
+from accounts.permissions import AccountAPIPermission
+from accounts.serializers import RegisterSerializer, LoginSerializer, AccountSerializer
 
 
 class RegisterView(generics.GenericAPIView):
@@ -39,6 +41,7 @@ class RegisterView(generics.GenericAPIView):
         email.send()
 
         return Response(user_data, status=status.HTTP_201_CREATED)
+
 
 
 class VerifyEmail(generics.GenericAPIView):
@@ -70,3 +73,33 @@ class LoginAPIView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AccountAPIView(generics.GenericAPIView):
+    permission_classes = (AccountAPIPermission,)
+
+    def get(self, request):
+        serializer = AccountSerializer(self.request.user, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self, request):
+        user_data = request.data
+
+        if not user_data['username'].isalnum():
+            raise serializers.ValidationError({"message": "The user name should only contain alphanumeric characters."}
+            )
+        if len(user_data['phone_number']) != 10:
+            raise serializers.ValidationError(
+                {"message": "Please type in valid phone number"}
+            )
+
+        user = self.request.user
+        user.username = user_data['username']
+        user.first_name = user_data['first_name']
+        user.last_name = user_data['last_name']
+        if user_data.get('image') is not None:
+            user.image = user_data['image']
+        user.phone_number = user_data['phone_number']
+        user.save()
+
+        return Response({"message": "Change user info successfully!"}, status=status.HTTP_200_OK)

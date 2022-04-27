@@ -61,10 +61,10 @@ class OrderViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=False, url_path='payment-methods', url_name='payment-methods', name='payment-methods', permission_classes=(ShipmentAPIPermission,))
     def payment_methods(self, request):
         payments = Payment.objects.all()
-        return Response(data=PaymentSerializer(list(payments), many=True).data,status=status.HTTP_200_OK)
+        return Response(data=PaymentSerializer(list(payments), many=True, context={"request": request}).data, status=status.HTTP_200_OK)
 
     @action(methods=['get'], detail=False, url_path='shipment-methods', url_name='shipment-methods',
             name='shipment-methods', permission_classes=(ShipmentAPIPermission,))
     def shipment_methods(self, request):
         shipments = Shipment.objects.all()
-        return Response(data=ShipmentSerializer(list(shipments), many=True).data, status=status.HTTP_200_OK)
+        return Response(data=ShipmentSerializer(list(shipments), many=True, context={"request": request}).data, status=status.HTTP_200_OK)

@@ -9,11 +9,19 @@ from store.models import Product
 
 class Payment(models.Model):
     payment_method = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='photos/payments', null=True)
+
+    def __str__(self):
+        return self.payment_method
 
 
 class Shipment(models.Model):
     service_provider = models.CharField(max_length=100)
     price = models.IntegerField()
+    image = models.ImageField(upload_to='photos/shipments', null=True)
+
+    def __str__(self):
+        return self.service_provider
 
 
 class Order(models.Model):
@@ -23,6 +31,7 @@ class Order(models.Model):
         COMPLETED = 'Completed', _('Completed')
 
     total_price = models.IntegerField()
+    order_total = models.IntegerField()
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE)
     shipment = models.ForeignKey(Shipment, on_delete=models.CASCADE)
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
