@@ -20,4 +20,12 @@ class Product(models.Model):
         return reverse("product_detail", args=[self.category.slug, self.slug])
 
     def __str__(self):
-        return self.product_name
+        return str(self.id)+" "+self.product_name
+
+
+class Image(models.Model):
+    image = models.ImageField(upload_to='photos/products/sub')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.id) + " product: " + self.product.product_name

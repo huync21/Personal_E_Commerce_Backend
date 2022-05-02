@@ -1,11 +1,13 @@
 from django.db.models import Q
 # Create your views here.
+from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from E_Commerce_Backend.paginations import MyPagination
-from store.models import Product
-from store.serializers import ProductSerializer
+from store.models import Product, Image
+from store.serializers import ProductSerializer, ImageSerializer
 
 
 class ProductViewSet(ReadOnlyModelViewSet):
@@ -33,3 +35,11 @@ class ProductViewSet(ReadOnlyModelViewSet):
         page = self.paginate_queryset(list_products)
         serializer = self.get_serializer(page, many=True)
         return self.get_paginated_response(serializer.data)
+
+    @action(methods=['get'], detail=False, url_path='images-of-product', url_name='images-of-product',
+            name='images-of-product')
+    def get_images_of_product(self, request):
+        product_id = request.query_params['product_id']
+        list_images = Image.objects.filter(product_id=product_id)
+        serializer = ImageSerializer(list_images, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
