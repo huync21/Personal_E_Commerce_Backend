@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-
 # Create your models here.
 from accounts.models import Account
 from store.models import Product
@@ -42,8 +41,10 @@ class Order(models.Model):
                               default=OrderStatus.DELIVERING)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
+    shipping_price = models.IntegerField()
 
-
+    def __str__(self):
+        return str(self.id)
 
 
 class OrderProduct(models.Model):
@@ -52,6 +53,3 @@ class OrderProduct(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-
-
