@@ -5,6 +5,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from E_Commerce_Backend.paginations import MyPagination
 from carts.models import CartItems
 from orders.models import Order, OrderProduct, Payment, Shipment
 from orders.permissions import OrderAPIPermission, ShipmentAPIPermission
@@ -21,6 +22,16 @@ class OrderViewSet(viewsets.ModelViewSet):
         current_user = self.request.user
         list_order = Order.objects.filter(account_id=current_user.id).order_by("-modified_at")
         return list_order
+
+    @action(methods=['get'], detail=False, url_path='all', url_name='all-order-pagination',
+            name='order-pagination', permission_classes=(OrderAPIPermission,))
+    def orders(self, request):
+        paginator = MyPagination()
+        current_user = self.request.user
+        list_order = Order.objects.filter(account_id=current_user.id).order_by("-modified_at")
+        page = paginator.paginate_queryset(list_order, request)
+        serializer = self.get_serializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         current_user = self.request.user

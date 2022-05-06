@@ -1,8 +1,13 @@
+import re
+
 import jwt
+import phonenumbers
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 # Create your views here.
 from django.urls import reverse
+from phonenumbers import carrier
+from phonenumbers.phonenumberutil import number_type
 from rest_framework import status, generics, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -88,7 +93,12 @@ class AccountAPIView(generics.GenericAPIView):
         if not user_data['username'].isalnum():
             raise serializers.ValidationError({"message": "The user name should only contain alphanumeric characters."}
             )
-        if len(user_data['phone_number']) != 10:
+        try:
+            if not carrier._is_mobile(number_type(phonenumbers.parse(user_data['phone_number'], 'VN'))):
+                raise serializers.ValidationError(
+                    {"message": "Please type in valid phone number"}
+                )
+        except:
             raise serializers.ValidationError(
                 {"message": "Please type in valid phone number"}
             )
