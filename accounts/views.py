@@ -45,8 +45,7 @@ class RegisterView(generics.GenericAPIView):
         email = EmailMessage(subject=email_subject, body=email_body, to=[user.email])
         email.send()
 
-        return Response(user_data, status=status.HTTP_201_CREATED)
-
+        return Response(user_data, status=status.HTTP_200_OK)
 
 
 class VerifyEmail(generics.GenericAPIView):
@@ -60,7 +59,7 @@ class VerifyEmail(generics.GenericAPIView):
                 user.is_active = True
                 user.save()
             else:
-                return Response({'email': 'You have already activated this email!'}, status=status.HTTP_200_OK)
+                return Response({'email': 'You have already activated this email!'}, status=status.HTTP_201_CREATED)
             return Response({'email': 'Active email successfully!'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return Response({'error': 'Activation token has expired!'}, status=status.HTTP_400_BAD_REQUEST)
@@ -92,7 +91,7 @@ class AccountAPIView(generics.GenericAPIView):
 
         if not user_data['username'].isalnum():
             raise serializers.ValidationError({"message": "The user name should only contain alphanumeric characters."}
-            )
+                                              )
         try:
             if not carrier._is_mobile(number_type(phonenumbers.parse(user_data['phone_number'], 'VN'))):
                 raise serializers.ValidationError(
