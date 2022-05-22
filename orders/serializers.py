@@ -17,12 +17,12 @@ class ShipmentSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    created_at = serializers.DateTimeField(format="%d %b %Y")
+    modified_at = serializers.DateTimeField(format="%d %b %Y")
     payment = PaymentSerializer()
     shipment = ShipmentSerializer()
     class Meta:
         model = Order
-        fields = ['id', 'payment', 'shipment', 'order_total', 'total_price', 'shipping_price', 'phone', 'shipping_address', 'created_at',
+        fields = ['id', 'payment', 'shipment', 'order_total', 'total_price', 'shipping_price', 'phone', 'shipping_address', 'modified_at',
                   'status']
 
 

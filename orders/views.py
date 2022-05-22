@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Q
 from rest_framework import viewsets, status
 
 # Create your views here.
@@ -107,3 +108,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         order_products = OrderProduct.objects.filter(order_id=order_id)
 
         return Response(data=OrderProductSerializer(list(order_products), many=True, context={"request": request}).data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False, url_path='by-month-and-year', url_name='get-orders-by-month-and-year',
+            name='get-orders-by-month-and-year')
+    def get_orders_by_month_and_year(self, request):
+        year = self.request.query_params['year']
+        month = self.request.query_params['month']
+        current_user = self.request.user
+
+        orders = Order.objects.filter(account_id=current_user.id).filter(modified_at__year=year)\
+            .filter(modified_at__month=month).filter(~Q(status='Canceled')).order_by("-modified_at")
+        return Response(OrderSerializer(list(orders),many=True).data,status=status.HTTP_200_OK)
