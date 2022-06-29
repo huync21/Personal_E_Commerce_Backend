@@ -8,5 +8,6 @@ class UserExpenseStatisticSerializer(serializers.Serializer):
 
 
 class UserExpenseByCategory(serializers.Serializer):
+    total_of_user = serializers.IntegerField()
     category = serializers.CharField()
     total = serializers.IntegerField()

@@ -7,7 +7,7 @@ from orders.models import Order, OrderProduct
 
 # Create your views here.
 from orders.permissions import OrderAPIPermission
-from .serializers import UserExpenseStatisticSerializer,UserExpenseByCategory
+from .serializers import UserExpenseStatisticSerializer, UserExpenseByCategory
 
 
 class UserExpenseStats(views.APIView):
@@ -20,13 +20,15 @@ class UserExpenseStats(views.APIView):
 
         # process
         expense_sum_of_user = \
-        Order.objects.filter(account_id=current_user.id).filter(modified_at__year=year).filter(~Q(status='Canceled')).aggregate(Sum('order_total'))[
-            'order_total__sum']
+            Order.objects.filter(account_id=current_user.id).filter(modified_at__year=year).filter(
+                ~Q(status='Canceled')).aggregate(Sum('order_total'))[
+                'order_total__sum']
         list_expense_statistic_by_month = []
         for month in range(1, 13):
             expense_sum_of_month = \
-            Order.objects.filter(account_id=current_user.id).filter(modified_at__year=year).filter(
-                modified_at__month=str(month)).filter(~Q(status='Canceled')).aggregate(Sum('order_total'))['order_total__sum']
+                Order.objects.filter(account_id=current_user.id).filter(modified_at__year=year).filter(
+                    modified_at__month=str(month)).filter(~Q(status='Canceled')).aggregate(Sum('order_total'))[
+                    'order_total__sum']
             if expense_sum_of_month is None:
                 # Neu nguoi dung khong tieu tien trong thang do thi cho tien thang do la 0
                 expense_sum_of_month = 0
@@ -52,17 +54,19 @@ class UserExpenseByCategoryStats(views.APIView):
 
         # process
         expense_sum_of_user = \
-        Order.objects.filter(account_id=current_user.id).filter(modified_at__year=year).filter(
+            Order.objects.filter(account_id=current_user.id).filter(modified_at__year=year).filter(
                 modified_at__month=str(month)).filter(~Q(status='Canceled')).aggregate(Sum('order_total'))[
-            'order_total__sum']
+                'order_total__sum']
         categories = Category.objects.all()
         list_expense_stats_by_category = []
         for category in categories:
             expense_sum_of_category = OrderProduct.objects.filter(
                 order__account_id=current_user.id).filter(order__modified_at__year=year).filter(
-                order__modified_at__month=str(month)).filter(~Q(order__status='Canceled')).filter(product__category_id=category.id).aggregate(category_total=Sum(F('price')*F('quantity')))[
+                order__modified_at__month=str(month)).filter(~Q(order__status='Canceled')).filter(
+                product__category_id=category.id).aggregate(category_total=Sum(F('price') * F('quantity')))[
                 'category_total']
-            expense_stat_by_category = {"category": category.category_name, "total": expense_sum_of_category if expense_sum_of_category is not None else 0}
+            expense_stat_by_category = {"total_of_user": expense_sum_of_user, "category": category.category_name,
+                                        "total": expense_sum_of_category if expense_sum_of_category is not None else 0}
             if expense_sum_of_category is not None:
                 list_expense_stats_by_category.append(expense_stat_by_category)
 
